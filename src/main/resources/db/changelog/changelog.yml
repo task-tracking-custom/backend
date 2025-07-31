@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001
+      author: funfayk082
+      preConditions:
+        - onFail: CONTINUE
+          not:
+            tableExists:
+              tableName: "google_user"
+      changes:
+        - createTable:
+            tableName: "google_user"
+            columns:
+              - column:
+                  name: id
+                  type: NVARCHAR(50)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: given_name
+                  type: NVARCHAR(100)
+              - column:
+                  name: family_name
+                  type: NVARCHAR(100)
+              - column:
+                  name: name
+                  type: NVARCHAR(100)
+              - column:
+                  name: email
+                  type: NVARCHAR(100)
+              - column:
+                  name: picture
+                  type: NVARCHAR(100)
+  - changeSet:
+      id: 002
+      author: funfayk082
+      preConditions:
+        - onFail: CONTINUE
+          not:
+            tableExists:
+              tableName: "github_user"
+      changes:
+        - createTable:
+            tableName: "github_user"
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: login
+                  type: NVARCHAR(100)
+              - column:
+                  name: avatar_url
+                  type: NVARCHAR(100)
+              - column:
+                  name: email
+                  type: NVARCHAR(100)

@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: TaskTrackerBackend
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 44208533597-f3cuu1nloc4qe86lhg9aa5pv490lmmua.apps.googleusercontent.com
+            client-secret: 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
+          github:
+            client-id: Ov23liR6dIFkWv7W4lQ1
+            client-secret: bca3b1ab14c2f38cd0e7155ebc75ce03aa999a26
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: myuser
+    password: secret
+    url: jdbc:postgresql://localhost:56874/mydatabase
+  liquibase:
+    change-log: db/changelog/changelog.yml
+
