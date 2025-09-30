@@ -6,54 +6,69 @@ databaseChangeLog:
         - onFail: CONTINUE
           not:
             tableExists:
-              tableName: "google_user"
+              tableName: "users"
       changes:
         - createTable:
-            tableName: "google_user"
+            tableName: "users"
             columns:
               - column:
                   name: id
-                  type: NVARCHAR(50)
+                  type: BIGINT
                   constraints:
                     primaryKey: true
+                    nullable: false
+                  autoIncrement: true
               - column:
-                  name: given_name
-                  type: NVARCHAR(100)
-              - column:
-                  name: family_name
-                  type: NVARCHAR(100)
-              - column:
-                  name: name
-                  type: NVARCHAR(100)
+                  name: username
+                  type: NVARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
               - column:
                   name: email
                   type: NVARCHAR(100)
-              - column:
-                  name: picture
-                  type: NVARCHAR(100)
-  - changeSet:
-      id: 002
-      author: funfayk082
-      preConditions:
-        - onFail: CONTINUE
-          not:
-            tableExists:
-              tableName: "github_user"
-      changes:
-        - createTable:
-            tableName: "github_user"
-            columns:
-              - column:
-                  name: id
-                  type: INTEGER
                   constraints:
-                    primaryKey: true
+                    nullable: false
+                    unique: true
               - column:
-                  name: login
+                  name: password
+                  type: NVARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: NVARCHAR(100)
+              - column:
+                  name: last_name
                   type: NVARCHAR(100)
               - column:
                   name: avatar_url
-                  type: NVARCHAR(100)
+                  type: NVARCHAR(255)
+  - changeSet:
+      id: 002
+      author: funfayk082
+      changes:
+        - addColumn:
+            tableName: "google_user"
+            columns:
               - column:
-                  name: email
-                  type: NVARCHAR(100)
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_google_user_user
+                    references: users(id)
+        - addColumn:
+            tableName: "github_user"
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_github_user_user
+                    references: users(id)
+  
+  # Включаем новые миграции для улучшенной авторизации
+  - include:
+      file: db/changelog/auth-migration.yml
