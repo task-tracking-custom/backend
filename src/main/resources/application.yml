@@ -6,20 +6,31 @@ spring:
       client:
         registration:
           google:
-            client-id: 44208533597-f3cuu1nloc4qe86lhg9aa5pv490lmmua.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
           github:
-            client-id: Ov23liR6dIFkWv7W4lQ1
-            client-secret: bca3b1ab14c2f38cd0e7155ebc75ce03aa999a26
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    username: myuser
-    password: secret
-    url: jdbc:postgresql://localhost:56874/mydatabase
+    username: ${SPRING_DATA_USERNAME}
+    password: ${SPRING_DATA_PASSWORD}
+    url: ${SPRING_DATA_URL}
   liquibase:
-    change-log: db/changelog/changelog.yml
+    change-log: ${LIQUIBASE_CHANGELOG_FILE}
+  config:
+    import: optional:file:.env[.properties]
+
+jwt:
+  secret: ${SECURITY_TOKEN_SECRET}
+  expiration: ${SECURITY_TOKEN_LIFETIME}
+
+frontend:
+  enabled: true
+  url: ${FRONTEND_URL}
+  oauth-callback: ${FRONTEND_OAUTH_CALLBACK}
 

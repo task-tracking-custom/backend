@@ -1,0 +1,177 @@
+databaseChangeLog:
+  # Добавляем новые поля в таблицу users
+  - changeSet:
+      id: auth-001
+      author: auth-migration
+      changes:
+        - addColumn:
+            tableName: "users"
+            columns:
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueDate: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  # Делаем пароль nullable для OAuth-only пользователей
+  - changeSet:
+      id: auth-002
+      author: auth-migration
+      changes:
+        - dropNotNullConstraint:
+            tableName: "users"
+            columnName: password
+            columnDataType: NVARCHAR(255)
+
+  # Создаем таблицу roles
+  - changeSet:
+      id: auth-003
+      author: auth-migration
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: "roles"
+      changes:
+        - createTable:
+            tableName: "roles"
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+  # Создаем таблицу user_roles (связь многие-ко-многим)
+  - changeSet:
+      id: auth-004
+      author: auth-migration
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: "user_roles"
+      changes:
+        - createTable:
+            tableName: "user_roles"
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: "user_roles"
+            columnNames: user_id, role_id
+        - addForeignKeyConstraint:
+            baseTableName: "user_roles"
+            baseColumnNames: user_id
+            constraintName: fk_user_roles_user
+            referencedTableName: "users"
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: "user_roles"
+            baseColumnNames: role_id
+            constraintName: fk_user_roles_role
+            referencedTableName: "roles"
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  # Создаем таблицу user_oauth_links
+  - changeSet:
+      id: auth-005
+      author: auth-migration
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: "user_oauth_links"
+      changes:
+        - createTable:
+            tableName: "user_oauth_links"
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider_id
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueDate: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: "user_oauth_links"
+            baseColumnNames: user_id
+            constraintName: fk_oauth_links_user
+            referencedTableName: "users"
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addUniqueConstraint:
+            tableName: "user_oauth_links"
+            columnNames: user_id, provider
+            constraintName: uk_user_provider
+        - addUniqueConstraint:
+            tableName: "user_oauth_links"
+            columnNames: provider, provider_id
+            constraintName: uk_provider_provider_id
+
+  # Добавляем роль USER по умолчанию
+  - changeSet:
+      id: auth-006
+      author: auth-migration
+      changes:
+        - insert:
+            tableName: "roles"
+            columns:
+              - column:
+                  name: name
+                  value: "USER"
+        - insert:
+            tableName: "roles"
+            columns:
+              - column:
+                  name: name
+                  value: "ADMIN"
