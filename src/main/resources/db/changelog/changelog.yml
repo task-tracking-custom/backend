@@ -44,30 +44,6 @@ databaseChangeLog:
               - column:
                   name: avatar_url
                   type: NVARCHAR(255)
-  - changeSet:
-      id: 002
-      author: funfayk082
-      changes:
-        - addColumn:
-            tableName: "google_user"
-            columns:
-              - column:
-                  name: user_id
-                  type: BIGINT
-                  constraints:
-                    nullable: true
-                    foreignKeyName: fk_google_user_user
-                    references: users(id)
-        - addColumn:
-            tableName: "github_user"
-            columns:
-              - column:
-                  name: user_id
-                  type: BIGINT
-                  constraints:
-                    nullable: true
-                    foreignKeyName: fk_github_user_user
-                    references: users(id)
   
   # Включаем новые миграции для улучшенной авторизации
   - include:
