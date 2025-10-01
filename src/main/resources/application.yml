@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: TaskTrackerBackend
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  liquibase:
+    change-log: ${LIQUIBASE_CHANGELOG_FILE}
+  config:
+    import: optional:file:.env[.properties]
+
+jwt:
+  secret: ${SECURITY_TOKEN_SECRET}
+  expiration: ${SECURITY_TOKEN_LIFETIME}
+
+frontend:
+  enabled: true
+  url: ${FRONTEND_URL}
+  oauth-callback: ${FRONTEND_OAUTH_CALLBACK}
+

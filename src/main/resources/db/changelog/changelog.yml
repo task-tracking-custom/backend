@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001
+      author: funfayk082
+      preConditions:
+        - onFail: CONTINUE
+          not:
+            tableExists:
+              tableName: "users"
+      changes:
+        - createTable:
+            tableName: "users"
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  autoIncrement: true
+              - column:
+                  name: username
+                  type: NVARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: NVARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: NVARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: NVARCHAR(100)
+              - column:
+                  name: last_name
+                  type: NVARCHAR(100)
+              - column:
+                  name: avatar_url
+                  type: NVARCHAR(255)
+  
+  # Включаем новые миграции для улучшенной авторизации
+  - include:
+      file: db/changelog/auth-migration.yml
