@@ -5,8 +5,8 @@ import com.aszaitsev.tasktrackerbackend.model.User;
 import com.aszaitsev.tasktrackerbackend.repository.RoleRepository;
 import com.aszaitsev.tasktrackerbackend.repository.UserOAuthLinkRepository;
 import com.aszaitsev.tasktrackerbackend.repository.UserRepository;
-import com.aszaitsev.tasktrackerbackend.service.dto.RegisterRequest;
-import com.aszaitsev.tasktrackerbackend.service.dto.UserInfoResponse;
+import com.aszaitsev.tasktrackerbackend.service.dto.request.RegisterRequest;
+import com.aszaitsev.tasktrackerbackend.service.dto.response.UserInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -97,5 +97,10 @@ public class UserService {
         
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
+    }
+
+    @Transactional
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
     }
 }

@@ -13,11 +13,10 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
-                  autoIncrement: true
               - column:
                   name: username
                   type: NVARCHAR(50)
@@ -45,6 +44,5 @@ databaseChangeLog:
                   name: avatar_url
                   type: NVARCHAR(255)
   
-  # Включаем новые миграции для улучшенной авторизации
-  - include:
-      file: db/changelog/auth-migration.yml
+  - includeAll:
+      path: db/changelog/migrations
