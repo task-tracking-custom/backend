@@ -1,18 +1,19 @@
 package com.aszaitsev.tasktrackerbackend.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     
     @Column(unique = true, nullable = false)
     private String username;
@@ -48,7 +49,7 @@ public class User {
     // Конструкторы
     public User() {}
     
-    public User(Long id, String username, String email, String password, Boolean enabled, 
+    public User(UUID id, String username, String email, String password, Boolean enabled,
                 LocalDateTime createdAt, String firstName, String lastName, String avatarUrl,
                 Set<Role> roles, Set<UserOAuthLink> oauthLinks) {
         this.id = id;
@@ -73,18 +74,38 @@ public class User {
     }
     
     // Геттеры и сеттеры
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
     
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
     
     public String getUsername() {
         return username;
     }
-    
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -96,7 +117,12 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
     public String getPassword() {
         return password;
     }
@@ -155,6 +181,13 @@ public class User {
     
     public Set<UserOAuthLink> getOauthLinks() {
         return oauthLinks;
+    }
+
+    public User(String username, String email, String password, Role role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.roles.add(role);
     }
     
     public void setOauthLinks(Set<UserOAuthLink> oauthLinks) {

@@ -1,0 +1,167 @@
+databaseChangeLog:
+  # Создаем таблицу projects
+  - changeSet:
+      id: project-task-001
+      author: project-task-migration
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: "projects"
+      changes:
+        - createTable:
+            tableName: "projects"
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: owner_id
+                  type: UUID
+        - addForeignKeyConstraint:
+            baseTableName: "projects"
+            baseColumnNames: owner_id
+            constraintName: fk_projects_owner
+            referencedTableName: "users"
+            referencedColumnNames: id
+            onDelete: SET NULL
+
+  # Создаем таблицу tasks
+  - changeSet:
+      id: project-task-002
+      author: project-task-migration
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: "tasks"
+      changes:
+        - createTable:
+            tableName: "tasks"
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: "TODO"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: priority
+                  type: VARCHAR(20)
+                  defaultValue: "MEDIUM"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assignee_id
+                  type: UUID
+              - column:
+                  name: creator_id
+                  type: UUID
+              - column:
+                  name: deadline
+                  type: TIMESTAMP
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueDate: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueDate: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: "tasks"
+            baseColumnNames: project_id
+            constraintName: fk_tasks_project
+            referencedTableName: "projects"
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: "tasks"
+            baseColumnNames: assignee_id
+            constraintName: fk_tasks_assignee
+            referencedTableName: "users"
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            baseTableName: "tasks"
+            baseColumnNames: creator_id
+            constraintName: fk_tasks_creator
+            referencedTableName: "users"
+            referencedColumnNames: id
+            onDelete: SET NULL
+
+  # Создаем таблицу project_members (связь многие-ко-многим)
+  - changeSet:
+      id: project-task-003
+      author: project-task-migration
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: "project_members"
+      changes:
+        - createTable:
+            tableName: "project_members"
+            columns:
+              - column:
+                  name: project_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: "project_members"
+            columnNames: project_id, user_id
+        - addForeignKeyConstraint:
+            baseTableName: "project_members"
+            baseColumnNames: project_id
+            constraintName: fk_project_members_project
+            referencedTableName: "projects"
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: "project_members"
+            baseColumnNames: user_id
+            constraintName: fk_project_members_user
+            referencedTableName: "users"
+            referencedColumnNames: id
+            onDelete: CASCADE
+

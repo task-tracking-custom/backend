@@ -3,6 +3,7 @@ package com.aszaitsev.tasktrackerbackend.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(
@@ -15,8 +16,8 @@ import java.time.LocalDateTime;
 public class UserOAuthLink {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
@@ -38,7 +39,7 @@ public class UserOAuthLink {
     // Конструкторы
     public UserOAuthLink() {}
     
-    public UserOAuthLink(Long id, User user, OAuthProvider provider, String providerId, String email, LocalDateTime createdAt) {
+    public UserOAuthLink(UUID id, User user, OAuthProvider provider, String providerId, String email, LocalDateTime createdAt) {
         this.id = id;
         this.user = user;
         this.provider = provider;
@@ -53,11 +54,11 @@ public class UserOAuthLink {
     }
     
     // Геттеры и сеттеры
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
     
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
     

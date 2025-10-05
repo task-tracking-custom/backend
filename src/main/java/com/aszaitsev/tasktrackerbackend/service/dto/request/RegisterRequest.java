@@ -1,4 +1,4 @@
-package com.aszaitsev.tasktrackerbackend.service.dto;
+package com.aszaitsev.tasktrackerbackend.service.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

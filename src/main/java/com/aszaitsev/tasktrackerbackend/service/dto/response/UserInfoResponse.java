@@ -1,16 +1,13 @@
-package com.aszaitsev.tasktrackerbackend.service.dto;
+package com.aszaitsev.tasktrackerbackend.service.dto.response;
 
 import com.aszaitsev.tasktrackerbackend.model.OAuthProvider;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class UserInfoResponse {
     
-    private Long id;
+    private UUID id;
     private String username;
     private String email;
     private Boolean hasPassword;
@@ -21,7 +18,7 @@ public class UserInfoResponse {
     // Конструкторы
     public UserInfoResponse() {}
     
-    public UserInfoResponse(Long id, String username, String email, Boolean hasPassword, 
+    public UserInfoResponse(UUID id, String username, String email, Boolean hasPassword,
                            Set<String> roles, List<OAuthLinkInfo> oauthLinks, LocalDateTime createdAt) {
         this.id = id;
         this.username = username;
@@ -33,11 +30,11 @@ public class UserInfoResponse {
     }
     
     // Геттеры и сеттеры
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
     
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
     

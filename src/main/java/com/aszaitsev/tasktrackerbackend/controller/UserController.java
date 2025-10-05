@@ -6,9 +6,12 @@ import com.aszaitsev.tasktrackerbackend.repository.UserOAuthLinkRepository;
 import com.aszaitsev.tasktrackerbackend.repository.UserRepository;
 import com.aszaitsev.tasktrackerbackend.security.CustomUserDetails;
 import com.aszaitsev.tasktrackerbackend.service.UserService;
-import com.aszaitsev.tasktrackerbackend.service.dto.MessageResponse;
-import com.aszaitsev.tasktrackerbackend.service.dto.SetPasswordRequest;
-import com.aszaitsev.tasktrackerbackend.service.dto.UserInfoResponse;
+import com.aszaitsev.tasktrackerbackend.service.dto.TaskViewDto;
+import com.aszaitsev.tasktrackerbackend.service.dto.response.ErrorResponse;
+import com.aszaitsev.tasktrackerbackend.service.dto.response.MessageResponse;
+import com.aszaitsev.tasktrackerbackend.service.dto.request.SetPasswordRequest;
+import com.aszaitsev.tasktrackerbackend.service.dto.response.UserInfoResponse;
+import com.aszaitsev.tasktrackerbackend.service.impl.TaskServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,6 +25,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +44,9 @@ public class UserController {
     
     @Autowired
     private UserOAuthLinkRepository userOAuthLinkRepository;
-    
+    @Autowired
+    private TaskServiceImpl taskService;
+
     @GetMapping("/me")
     @Operation(
             summary = "Получить информацию о текущем пользователе",
@@ -188,5 +194,33 @@ public class UserController {
         userOAuthLinkRepository.deleteByUserAndProvider(user, oauthProvider);
         
         return ResponseEntity.ok(new MessageResponse(provider + " account unlinked successfully"));
+    }
+
+    @GetMapping("/me/tasks")
+    @Operation(
+            summary = "Получить список задач для авторизованного пользователя",
+            description = "Возвращает список задач для авторизованного пользователя"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Список задач по пользователю",
+                    content = @Content(
+                            schema = @Schema(implementation = TaskViewDto.class),
+                            mediaType = "application/json"
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Не найден пользователь",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            mediaType = "application/json"
+                    )
+            )
+    })
+    public ResponseEntity<?> myTasks(@Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
+        User user = userService.getUserByUsername(userDetails.getUsername());
+        return ResponseEntity.ok(taskService.listByUser(user));
     }
 }
