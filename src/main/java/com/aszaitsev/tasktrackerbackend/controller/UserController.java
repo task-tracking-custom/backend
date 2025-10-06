@@ -25,7 +25,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,6 +68,9 @@ public class UserController {
     })
     public ResponseEntity<UserInfoResponse> getCurrentUser(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).build();
+        }
         UserInfoResponse userInfo = userService.getUserInfo(userDetails.getUsername());
         return ResponseEntity.ok(userInfo);
     }

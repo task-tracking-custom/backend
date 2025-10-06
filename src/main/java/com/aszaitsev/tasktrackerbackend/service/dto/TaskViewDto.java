@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @Schema(description = "Отображение задачи в списке")
@@ -17,6 +19,7 @@ public class TaskViewDto {
     private TaskPriority priority;
     private String projectName;
     private String assignee;
+    private LocalDateTime deadline;
 
     public TaskViewDto(Task task) {
         this.title = task.getTitle();
@@ -24,6 +27,7 @@ public class TaskViewDto {
         this.priority = task.getPriority();
         this.projectName = task.getProject().getName();
         this.assignee = task.getAssignee().getUsername();
+        this.deadline = task.getDeadline();
     }
 
     public String title() {

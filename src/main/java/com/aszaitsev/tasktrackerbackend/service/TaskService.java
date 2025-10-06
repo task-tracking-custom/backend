@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public interface TaskService {
     Task createTask(Task task);
-
+    
     List<TaskViewDto> listByDeadline(LocalDateTime deadline);
     Page<TaskViewDto> listByDeadline(LocalDateTime deadline, Pageable pageable);
 
