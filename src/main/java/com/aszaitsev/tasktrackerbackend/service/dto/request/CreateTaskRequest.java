@@ -24,7 +24,7 @@ public class CreateTaskRequest {
     @Schema(example = "Description")
     private String description;
     @ValidStatus
-    @Schema(example = "NEW")
+    @Schema(example = "TODO")
     private TaskStatus status;
     @Future
     @JsonFormat(pattern = "yyyy-MM-dd")

@@ -81,7 +81,7 @@ public class UserService {
                         oauth.getEmail(),
                         oauth.getCreatedAt()
                 ))
-                .toList());
+                .collect(Collectors.toList()));
         response.setCreatedAt(user.getCreatedAt());
         return response;
     }

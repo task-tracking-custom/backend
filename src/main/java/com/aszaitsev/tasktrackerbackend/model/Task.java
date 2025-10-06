@@ -56,6 +56,7 @@ public class Task {
         this.project = project;
         this.creator = creator;
         this.assignee = creator;
+        this.deadline = deadline;
     }
     
     @PrePersist

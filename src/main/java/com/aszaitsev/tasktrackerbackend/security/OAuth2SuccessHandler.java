@@ -49,27 +49,32 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Boolean isLinkMode = session != null && Boolean.TRUE.equals(session.getAttribute("OAUTH_LINK_MODE"));
         String linkUsername = session != null ? (String) session.getAttribute("OAUTH_LINK_USER") : null;
         
-        logger.info("OAuth2 callback - Session: {}, Link mode: {}", session != null, isLinkMode);
+        logger.info("OAuth2 callback - Session exists: {}, Link mode: {}, Link username: {}", 
+                    session != null, isLinkMode, linkUsername);
         
         try {
             String token;
             String targetUrl;
             
-            if (isLinkMode && linkUsername != null) {
+            if (isLinkMode && linkUsername != null && !linkUsername.isEmpty()) {
                 // Режим привязки OAuth к существующему аккаунту
+                logger.info("Entering link mode for user: {}", linkUsername);
                 User user = userRepository.findByUsername(linkUsername)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+                        .orElseThrow(() -> new RuntimeException("User not found: " + linkUsername));
                 
                 oAuth2Service.linkOAuthAccount(user, oAuth2User, registrationId);
                 
                 // Очищаем сессию
-                session.removeAttribute("OAUTH_LINK_MODE");
-                session.removeAttribute("OAUTH_LINK_USER");
+                if (session != null) {
+                    session.removeAttribute("OAUTH_LINK_MODE");
+                    session.removeAttribute("OAUTH_LINK_USER");
+                }
                 
                 token = jwtService.generateTokenFromUsername(user.getUsername());
                 targetUrl = "/"; // Redirect to main after linking
             } else {
-                // Обычный OAuth логин
+                // Обычный OAuth логин (регистрация или вход)
+                logger.info("Entering normal OAuth login/registration mode for registrationId: {}", registrationId);
                 User user = oAuth2Service.processOAuthLogin(oAuth2User, registrationId);
                 token = jwtService.generateTokenFromUsername(user.getUsername());
                 
@@ -90,7 +95,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             
         } catch (Exception e) {
             logger.error("Error during OAuth2 authentication", e);
-            String errorMessage = URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
+            String errorMessage = URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8.toString());
             getRedirectStrategy().sendRedirect(request, response, "/oauth2/error?error=" + errorMessage);
         }
     }
